@@ -16,6 +16,14 @@
 
 #define K 200 // genreate a data node for K times in each thread
 
+// Task 1
+// Givin two character strings s1 and s2 find
+// the number of subs strings s1 that is the same as s2
+void* getSubstring(void* arg){
+        int threadId = *((int* ) arg)
+}
+
+// Nodes
 struct Node
 {
     int data;
@@ -46,6 +54,7 @@ void bind_thread_to_cpu(int cpuid) {
          exit(EXIT_FAILURE);
      }
 }
+
 
 // Dynamically generate new data node
 struct Node* generate_data_node()
