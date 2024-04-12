@@ -1,5 +1,6 @@
 Resources:
 https://man7.org/linux/man-pages/man2/sched_setaffinity.2.html
+https://stackoverflow.com/questions/24034631/error-message-undefined-reference-for-cpu-zero
 
 For compiling the first task:
 have include -std-c99, it did not like my for loops?
