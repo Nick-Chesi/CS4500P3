@@ -14,5 +14,10 @@ gcc -o task2 task2.c -lpthread
 
 output from message.txt:
 =======================
-
+hello i am a text file!
 =======================
+hello i am a text file!
+
+DONE
+
+For the third task
