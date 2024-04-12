@@ -14,6 +14,9 @@ int add = 0; // index for add
 int rem = 0; // index for rm / remove
 int num = 0; // elements buffer
 
+// consumer flag finished
+int finished = 0;
+
 // Mutex for protecting access to the buffer
 pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 // Condition var for signaling for producer consumer
@@ -60,7 +63,7 @@ char rm() {
 // producer thread
 void *producer(void *param) {
         // open file
-    FILE *fp = fopen("strings.txt", "r");
+    FILE *fp = fopen("message.txt", "r");
     if (fp == NULL) {
         perror("Unable to open the file");
         exit(1);
@@ -69,24 +72,28 @@ void *producer(void *param) {
         // read until EOF
         // lock the mutex before changing the buffer
         // wait if the buffer is full
-    char item;
+           char item;
     while ((item = fgetc(fp)) != EOF) {
         pthread_mutex_lock(&m);
         while (num == BUFFER_SIZE) {
             pthread_cond_wait(&c_producer, &m);
         }
-                // Insert item into buffer
-                // send signal to that consumer has new data
-                // unlock mutex
+
         insert(item);
         pthread_cond_signal(&c_consumer);
         pthread_mutex_unlock(&m);
     }
 
-        // close file
+    // Insert a sentinel value to indicate end-of-data
+    pthread_mutex_lock(&m);
+    while (num == BUFFER_SIZE) {
+        pthread_cond_wait(&c_producer, &m);
+    }
+    insert('\0'); // Sentinel value for end-of-data
+    pthread_cond_signal(&c_consumer);
+    pthread_mutex_unlock(&m);
 
     fclose(fp);
-    return NULL;
 }
 
 // Consumer thread
@@ -99,20 +106,21 @@ void *consumer(void *param) {
 
     while (1) {
                 // Lock the mutex before buffer access
-        pthread_mutex_lock(&m);
                 // Wait if buffer is empty
-        while (num == 0) {
+         while (num == 0) {
             pthread_cond_wait(&c_consumer, &m);
         }
-                // remove items from buffer
+
         item = rm();
+        if (item == '\0') { // Check for the sentinel value
+            pthread_mutex_unlock(&m);
+            break; // Exit the loop and end the thread
+        }
         printf("%c", item);
         fflush(stdout);
-                // signal theres more space and then
+                // signal producer done
                 // unlock mutex
         pthread_cond_signal(&c_producer);
         pthread_mutex_unlock(&m);
     }
-
-    return NULL;
 }
