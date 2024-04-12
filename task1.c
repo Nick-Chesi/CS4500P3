@@ -25,9 +25,10 @@ int main(int argc, char *argv[]) {
     int segment_length;
 
     if ((fp = fopen("strings.txt", "r")) == NULL) {
-        printf("ERROR: can't open strings.txt!\n");
+        printf("CANNOT OPEN strings.txt!\n");
         return 0;
     }
+
     s1 = (char *)malloc(sizeof(char) * MAX);
     s2 = (char *)malloc(sizeof(char) * MAX);
     s1 = fgets(s1, MAX, fp);
