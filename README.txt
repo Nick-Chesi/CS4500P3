@@ -9,3 +9,10 @@ ab
 =======================
 Substrings: 4
 
+For the second task
+gcc -o task2 task2.c -lpthread
+
+output from message.txt:
+=======================
+
+=======================
