@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
     }
 
     pthread_mutex_destroy(&mutex_total);
-    printf("The number of substrings is: %d\n", total);
+    printf("Substrings: %d\n", total);
 
     free(s1);
     free(s2);
