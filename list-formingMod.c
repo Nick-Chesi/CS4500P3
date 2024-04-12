@@ -16,12 +16,11 @@
 
 #define K 200 // genreate a data node for K times in each thread
 
-// Task 1
-// Givin two character strings s1 and s2 find
-// the number of subs strings s1 that is the same as s2
-void* getSubstring(void* arg){
-        int threadId = *((int* ) arg)
-}
+// Variables for task1
+char* s1;
+char* s2;
+int globalCount = 0;
+pthread_mutex_t countMutex;
 
 // Nodes
 struct Node
@@ -55,7 +54,6 @@ void bind_thread_to_cpu(int cpuid) {
      }
 }
 
-
 // Dynamically generate new data node
 struct Node* generate_data_node()
 {
@@ -71,48 +69,57 @@ struct Node* generate_data_node()
     return ptr;
 }
 
-
-// Producer thread that generates data nodes and add those
-// data nodes to the global lsit
-void * producer_thread( void *arg)
-{
-    bind_thread_to_cpu(*((int*)arg));//bind this thread to a CPU
-
-    struct Node * ptr, tmp;
-    int counter = 0;
-
-    /* generate and attach K nodes to the global list */
-    while( counter  < K )
-    {
-        ptr = generate_data_node();
-
-        if( NULL != ptr )
-        {
-            while(1)
-            {
-                /* access the critical region and add a node to the global list */
-                if( !pthread_mutex_trylock(&mutex_lock) )
-                {
-                    ptr->data  = 1;//generate data
-                    /* attache the generated node to the global list */
-                    if( List->header == NULL )
-                    {
-                        List->header = List->tail = ptr;
-                    }
-                    else
-                    {
-                        List->tail->next = ptr;
-                        List->tail = ptr;
-                    }
-                    pthread_mutex_unlock(&mutex_lock);
-                    break;
-                }
-            }
-        }
-        ++counter;
+// Helper function to attach a local list to the
+// global list
+void attachLocalListToGlobal(struct list* localList) {
+    if (localList->header == NULL) {
+        return; // Local list is empty
     }
+    pthread_mutex_lock(&mutex_lock);
+    if (List->header == NULL) {
+        // Global list is empty point to local list
+                List->header = localList->header;
+        List->tail = localList->tail;
+    } else {
+        // Attach local list to the end of the global list
+        List->tail->next = localList->header;
+        List->tail = localList->tail;
+    }
+    pthread_mutex_unlock(&mutex_lock);
 }
 
+// TASK 3 UPDATE
+void* producerThread(void* arg){
+
+        // bind cpu to a thread
+        bind_thread_to_cpu(*((int*)arg));
+        // local list for each thread
+        struct list localList = {0};
+        int counter = 0;
+
+        // generate nodes and add them to list
+        while(counter < K){
+                struct Node* ptr = generate_data_node();
+                // check if node is null then
+                if(ptr != NULL){
+                        // Check if first node is null, then
+                        // if it is initalize it
+                        if(localList.header == NULL){
+                                // First node
+                                localList.header = ptr;
+                                localList.tail = ptr;
+                        } else {
+                                // Attach the new node to the end
+                                localList.tail->next = ptr;
+                                localList.tail = ptr;
+                        }
+                }
+                // Increment counter to k nodes
+                counter++;
+        }
+        // After generating local nodes attach to the global nodes
+        attachLocalListToGlobal(&localList);
+}
 
 int main(int argc, char* argv[])
 {
@@ -165,7 +172,7 @@ int main(int argc, char* argv[])
 
         for( i = 0; i < num_threads; i++ )
     {
-        pthread_create(&(producer[i]), NULL, (void *) producer_thread, &cpu_array[i%NUM_PROCS]);
+        pthread_create(&(producer[i]), NULL, (void *) producerThread, &cpu_array[i%NUM_PROCS]);
     }
 
     for( i = 0; i < num_threads; i++ )
