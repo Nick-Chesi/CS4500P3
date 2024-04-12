@@ -25,6 +25,7 @@ hello i am a text file!
 DONE
 
 For the third task
+gcc list-forming.c -o list-forming -pthread -D_GNU_SOURCE
 I edited the producerThread to have the following code:
 
 // Helper function to attach a local list to the
