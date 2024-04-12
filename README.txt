@@ -1,3 +1,6 @@
+Username: root
+Password: 1234!@#$
+
 Resources:
 https://man7.org/linux/man-pages/man2/sched_setaffinity.2.html
 https://stackoverflow.com/questions/24034631/error-message-undefined-reference-for-cpu-zero
@@ -83,7 +86,7 @@ void* producerThread(void* arg){
 
 
 NOTE FOR TESTING PURPOSES THE EDITED LIST-FORMING.C IS NAMED list-formingMod.c, ALL TEST RESULTS FROM THE COMPILED BIN WILL SHOW THIS...
-Note 1000 Microseconds = 1 Milisecond, 1000 Miliseconds = 1 second.
+Note 1000 Microseconds = 1 Milisecond, 1000 Miliseconds = 1 second. Also as K value increased the time increased as well, same with threads.
 Test Results Supplied Code (K Values Tested: 200, 400, 800, 1600), (Threads testes 2, 4, 8, 16, 32, 64, 128):
 K = 200:
 2 Threads: Total run time is 602 microseconds.
@@ -110,44 +113,45 @@ K = 800
 64 Threads: Total run time is 41545 microseconds.
 128 Threads: Total run time is 75146 microseconds.
 K = 1600
-2 Threads: 
-4 Threads: 
-8 Threads: 
-16 Threads: 
-32 Threads: 
-64 Threads: 
-128 Threads: 
+2 Threads: Total run time is 1972 microseconds.
+4 Threads: Total run time is 5846 microseconds.
+8 Threads: Total run time is 9515 microseconds.
+16 Threads: Total run time is 21615 microseconds.
+32 Threads: Total run time is 32084 microseconds.
+64 Threads: Total run time is 74302 microseconds.
+128 Threads: Total run time is 148132 microseconds.
 
 Test Results Modified Code (K Values Tested: 200, 400, 800, 1600), (Threads testes 2, 4, 8, 16, 32, 64, 128):
 K = 200
-2 Threads: 
-4 Threads: 
-8 Threads: 
-16 Threads: 
-32 Threads: 
-64 Threads: 
-128 Threads: 
+2 Threads: Total run time is 454 microseconds.
+4 Threads: Total run time is 582 microseconds.
+8 Threads: Total run time is 2511 microseconds.
+16 Threads: Total run time is 3601 microseconds.
+32 Threads: Total run time is 16837 microseconds.
+64 Threads: Total run time is 10714 microseconds.
+128 Threads: Total run time is 15958 microseconds.
 K = 400
-2 Threads: 
-4 Threads: 
-8 Threads: 
-16 Threads: 
-32 Threads: 
-64 Threads: 
-128 Threads: 
+2 Threads: Total run time is 451 microseconds.
+4 Threads: Total run time is 522 microseconds.
+8 Threads: Total run time is 2339 microseconds.
+16 Threads: Total run time is 4064 microseconds.
+32 Threads: Total run time is 8720 microseconds.
+64 Threads: Total run time is 13359 microseconds.
+128 Threads: Total run time is 20081 microseconds.
 K = 800
-2 Threads: 
-4 Threads: 
-8 Threads: 
-16 Threads: 
-32 Threads: 
-64 Threads: 
-128 Threads: 
+2 Threads:  Total run time is 487 microseconds.
+4 Threads: Total run time is 718 microseconds.
+8 Threads: Total run time is 2534 microseconds.
+16 Threads: Total run time is 7673 microseconds.
+32 Threads: Total run time is 8557 microseconds.
+64 Threads: Total run time is 22141 microseconds.
+128 Threads: Total run time is 37681 microseconds.
 K = 1600
-2 Threads: 
-4 Threads: 
-8 Threads: 
-16 Threads: 
-32 Threads: 
-64 Threads: 
-128 Threads: 
+2 Threads: Total run time is 587 microseconds.
+4 Threads: Total run time is 1945 microseconds.
+8 Threads: Total run time is 1988 microseconds.
+16 Threads: Total run time is 5486 microseconds.
+32 Threads: Total run time is 13274 microseconds.
+64 Threads: Total run time is 25819 microseconds.
+128 Threads: Total run time is 56783 microseconds.
+4096: Threads: Total run time is 1827336 microseconds.
