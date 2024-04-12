@@ -25,6 +25,7 @@ hello i am a text file!
 DONE
 
 For the third task
+gcc list-forming.c -o mod-list-forming -pthread -D_GNU_SOURCE
 gcc list-forming.c -o list-forming -pthread -D_GNU_SOURCE
 I edited the producerThread to have the following code:
 
@@ -79,3 +80,74 @@ void* producerThread(void* arg){
         // After generating local nodes attach to the global nodes
         attachLocalListToGlobal(&localList);
 }
+
+
+NOTE FOR TESTING PURPOSES THE EDITED LIST-FORMING.C IS NAMED list-formingMod.c, ALL TEST RESULTS FROM THE COMPILED BIN WILL SHOW THIS...
+Note 1000 Microseconds = 1 Milisecond, 1000 Miliseconds = 1 second.
+Test Results Supplied Code (K Values Tested: 200, 400, 800, 1600), (Threads testes 2, 4, 8, 16, 32, 64, 128):
+K = 200:
+2 Threads: Total run time is 602 microseconds.
+4 Threads: Total run time is 2185 microseconds.
+8 Threads: Total run time is 2991 microseconds.
+16 Threads: Total run time is 5040 microseconds.
+32 Threads: Total run time is 7116 microseconds.
+64 Threads: Total run time is 14148 microseconds.
+128 Threads: Total run time is 19270 microseconds.
+K = 400:
+2 Threads: Total run time is 759 microseconds.
+4 Threads: Total run time is 1093 microseconds.
+8 Threads: Total run time is 2199 microseconds.
+16 Threads: Total run time is 4750 microseconds.
+32 Threads: Total run time is 8806 microseconds.
+64 Threads: Total run time is 23772 microseconds.
+128 Threads: Total run time is 41674 microseconds.
+K = 800
+2 Threads: Total run time is 1108 microseconds.
+4 Threads: Total run time is 2786 microseconds.
+8 Threads: Total run time is 4545 microseconds.
+16 Threads: Total run time is 7321 microseconds.
+32 Threads: Total run time is 19445 microseconds.
+64 Threads: Total run time is 41545 microseconds.
+128 Threads: Total run time is 75146 microseconds.
+K = 1600
+2 Threads: 
+4 Threads: 
+8 Threads: 
+16 Threads: 
+32 Threads: 
+64 Threads: 
+128 Threads: 
+
+Test Results Modified Code (K Values Tested: 200, 400, 800, 1600), (Threads testes 2, 4, 8, 16, 32, 64, 128):
+K = 200
+2 Threads: 
+4 Threads: 
+8 Threads: 
+16 Threads: 
+32 Threads: 
+64 Threads: 
+128 Threads: 
+K = 400
+2 Threads: 
+4 Threads: 
+8 Threads: 
+16 Threads: 
+32 Threads: 
+64 Threads: 
+128 Threads: 
+K = 800
+2 Threads: 
+4 Threads: 
+8 Threads: 
+16 Threads: 
+32 Threads: 
+64 Threads: 
+128 Threads: 
+K = 1600
+2 Threads: 
+4 Threads: 
+8 Threads: 
+16 Threads: 
+32 Threads: 
+64 Threads: 
+128 Threads: 
