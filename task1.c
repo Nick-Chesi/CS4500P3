@@ -1,70 +1,61 @@
 #include <pthread.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
-// Assuming a sensible default for maximum threads.
-#define MAX_THREADS 8
-// Mutex for updating the global match count.
-pthread_mutex_t lock;
+#define MAX 1024
+#define NUM_THREADS 4
 
-char *s1;
-char *s2;
-int globalMatchCount = 0;
+int total = 0;
+int n1, n2;
+char *s1, *s2;
+FILE *fp;
+pthread_mutex_t mutex_total;
 
 typedef struct {
-    int start_offset;
-} ThreadArgs;
+    int start;
+    int end;
+} ThreadData;
 
-void* substring_search(void* args);
+void *substring_search(void *arg);
 
-int main() {
-    pthread_t threads[MAX_THREADS];
-    ThreadArgs args[MAX_THREADS];
-    FILE *file;
-    char *filename = "string.txt";
-    size_t len = 0;
-    ssize_t read;
+int main(int argc, char *argv[]) {
+    pthread_t threads[NUM_THREADS];
+    ThreadData data[NUM_THREADS];
+    int segment_length;
 
-    file = fopen(filename, "r");
-    if (file == NULL) {
-        exit(EXIT_FAILURE);
+    if ((fp = fopen("strings.txt", "r")) == NULL) {
+        printf("ERROR: can't open strings.txt!\n");
+        return 0;
+    }
+    s1 = (char *)malloc(sizeof(char) * MAX);
+    s2 = (char *)malloc(sizeof(char) * MAX);
+    s1 = fgets(s1, MAX, fp);
+    s2 = fgets(s2, MAX, fp);
+    n1 = strlen(s1) - 1;
+    n2 = strlen(s2) - 1;
+    fclose(fp);
+
+    if (s1 == NULL || s2 == NULL || n1 < n2) {
+        printf("Input error\n");
+        return -1;
     }
 
-    s1 = (char *)malloc(1000 * sizeof(char));
-    s2 = (char *)malloc(1000 * sizeof(char));
+    segment_length = n1 / NUM_THREADS;
+    pthread_mutex_init(&mutex_total, NULL);
 
-    // Read s1
-    if ((read = getline(&s1, &len, file)) != -1) {
-        s1[strcspn(s1, "\n")] = 0; // Removing newline character
+    for (int i = 0; i < NUM_THREADS; i++) {
+        data[i].start = i * segment_length;
+        data[i].end = (i == NUM_THREADS - 1) ? (n1 - n2) : ((i + 1) * segment_length - 1);
+        pthread_create(&threads[i], NULL, substring_search, &data[i]);
     }
 
-    // Read s2
-    if ((read = getline(&s2, &len, file)) != -1) {
-        s2[strcspn(s2, "\n")] = 0; // Removing newline character
-    }
-
-    fclose(file);
-
-    if (pthread_mutex_init(&lock, NULL) != 0) {
-        printf("\n mutex init has failed\n");
-        return 1;
-    }
-
-    for (int i = 0; i < MAX_THREADS; i++) {
-        args[i].start_offset = i;
-        if (pthread_create(&threads[i], NULL, substring_search, (void*)&args[i]) != 0) {
-            printf("Failed to create thread\n");
-        }
-    }
-
-    for (int i = 0; i < MAX_THREADS; i++) {
+    for (int i = 0; i < NUM_THREADS; i++) {
         pthread_join(threads[i], NULL);
     }
 
-    printf("Total matches: %d\n", globalMatchCount);
-
-    pthread_mutex_destroy(&lock);
+    pthread_mutex_destroy(&mutex_total);
+    printf("The number of substrings is: %d\n", total);
 
     free(s1);
     free(s2);
@@ -72,23 +63,25 @@ int main() {
     return 0;
 }
 
-void* substring_search(void* args) {
-    ThreadArgs *threadArgs = (ThreadArgs*)args;
-    int offset = threadArgs->start_offset;
-    int len_s1 = strlen(s1);
-    int len_s2 = strlen(s2);
+void *substring_search(void *arg) {
+    ThreadData *data = (ThreadData *)arg;
     int count = 0;
-
-    for (int i = offset; i <= len_s1 - len_s2; i += MAX_THREADS) {
-        if (strncmp(s1 + i, s2, len_s2) == 0) {
+    for (int i = data->start; i <= data->end; i++) {
+        int match = 1;
+        for (int j = 0; j < n2 && (i+j) < n1; j++) {
+            if (s1[i+j] != s2[j]) {
+                match = 0;
+                break;
+            }
+        }
+        if (match) {
             count++;
         }
     }
 
-    // Lock before updating the global counter and unlock afterward
-    pthread_mutex_lock(&lock);
-    globalMatchCount += count;
-    pthread_mutex_unlock(&lock);
+    pthread_mutex_lock(&mutex_total);
+    total += count;
+    pthread_mutex_unlock(&mutex_total);
 
-    return NULL;
+    pthread_exit(NULL);
 }
