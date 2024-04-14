@@ -30,8 +30,13 @@ DONE
 For the third task
 gcc list-forming.c -o mod-list-forming -pthread -D_GNU_SOURCE
 gcc list-forming.c -o list-forming -pthread -D_GNU_SOURCE
-I edited the producerThread to have the following code:
 
+Description of changes:
+I mainly reduced the usage of pthread_mutex_trylock, which is a busy wait loop so that we can decrease cpu usage
+because we will not be in a busy wait cycle. I also modified the code to reduce the usage of locks by attempting to 
+reduce the number of times a thread interacts with a locked resource.
+
+I edited the producerThread to have the following code:
 // Helper function to attach a local list to the
 // global list
 void attachLocalListToGlobal(struct list* localList) {
